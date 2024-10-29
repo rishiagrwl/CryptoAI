@@ -1,0 +1,5 @@
+CACHE_JSON: data\cache.json
+CACHE_LIMIT: 60
+CRYPTO_ID_URL: https://api.coingecko.com/api/v3/coins/list
+CRYPTO_ID_JSON: data\crypto_ids.json
+CRYPTO_PRICE_ENDPOINT: https://api.coingecko.com/api/v3/simple/price
