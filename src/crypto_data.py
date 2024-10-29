@@ -5,6 +5,31 @@ from custom_logging import crypto_logger
 
 CONFIG = read_yaml()
 
+## fetch all currencies supported by coingecko
+def fetch_supported_curr_api():
+    url = CONFIG['VS_CURR_ID']
+    try:
+        response = requests.get(url)
+        # Check for HTTP errors
+        response.raise_for_status()
+        data = response.json()
+        crypto_logger.info("Supported currencies fetched successfully")
+        return data
+    except requests.exceptions.RequestException as e:
+        crypto_logger.error(f"Error fetching supported currencies: {e}")
+
+## function to load supported currs
+def get_supported_currs():
+    crypto_ids = read_json(input_file=CONFIG['CURR_JSON'])
+
+    if not crypto_ids:
+        crypto_ids = fetch_supported_curr_api()
+        crypto_logger.info(f"Fetching supported currencies from url")
+        write_json(data=crypto_ids, output_file=CONFIG['CURR_JSON'])
+
+    crypto_logger.info(f"Total supported currencies fetched: {len(crypto_ids)}")
+    return crypto_ids
+
 ## fetch crypto ids from api
 def fetch_crypto_ids_api():
     url = CONFIG['CRYPTO_ID_URL']
@@ -66,5 +91,6 @@ def get_cached_crypto_price(crypto_id='bitcoin', currency='usd'):
         cache[crypto_id][currency] = {'price': price, 'time': current_time}
         write_json(data=cache, output_file=CONFIG['CACHE_JSON'])
 
-    ## return a formatted answer
-    return f"The current price of {crypto_id.capitalize()} is {price} {currency.upper()}."
+    # ## return a formatted answer
+    # return f"The current price of {crypto_id.capitalize()} is {price} {currency.upper()}."
+    return price
