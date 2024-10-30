@@ -1,51 +1,50 @@
-from src.crypto_data import get_crypto_ids, get_cached_crypto_price, get_supported_currs
+import streamlit as st
+from src.main import get_response, check_username, refetch_crypto_ids, refetch_curr
 
-# crypto_ids = get_crypto_ids()
-# print(len(crypto_ids))
+# Initialize session state for conversation history
+if 'conversation_history' not in st.session_state:
+    st.session_state.conversation_history = []
 
-# answer = get_cached_crypto_price()
-# print(answer)
+# Title of the app
+st.title("Cryptocurrency Query App")
 
-# currs= get_supported_currs()
-# print(currs)
+# User input section
+username = st.text_input("Enter your username:", value='Rishika50')
+if st.button("Submit username"):
+    st.text(check_username(username))
 
-from crypto_AI.src.llm_call import get_llm_response
+user_question = st.text_input("Ask your question about cryptocurrencies:")
 
-supported_curr = get_supported_currs()
-crypto_id_map = get_crypto_ids()
-crypto_ids = [item['id'] for item in crypto_id_map]
+# Button to submit the question
+if st.button("Get Response"):
+    if username and user_question:
+        answer = get_response(user_query=user_question, user_id=username)
+        # Append question and answer to conversation history
+        st.session_state.conversation_history.append((user_question, answer))
+    else:
+        st.error("Please enter both username and question.")
 
-tools = [
-  {
-    "type": "function",
-    "function": {
-      "name": "get_crypto_price",
-      "description": "Get the current crypto price for the given crypto_id and currency",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "crypto_id": {
-            "type": "string",
-            # "description": "The crypto_id, e.g. bitcoin, monke, etc.",
-            # "enum": crypto_ids,
-            "enum":["bitcoin", "ethereum", "dogecoin"],
-          },
-          "currency": {
-            "type": "string",
-            # "description": "The currency of the crypto price.",
-            # "enum": supported_curr,
-            "enum": ["usd", "eur", "gbp"],
-          }
-        },
-        "required": ["crypto_id"],
-      }
-    }
-  }
-]
+# Display conversation history
+if st.session_state.conversation_history:
+    st.subheader("Conversation History:")
+    
+    for idx, (question, answer) in enumerate(st.session_state.conversation_history):
+        # Display question and answer with better formatting
+        st.markdown(f"<div style='border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 5px;'>", unsafe_allow_html=True)
+        st.markdown(f"<strong style='color: blue;'>You:</strong> {question}", unsafe_allow_html=True)
+        st.markdown(f"<strong style='color: green;'>Bot:</strong> {answer}", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-messages = [
-    {"role": "system", "content": "You are a helpful assistant. You are provided with a function named 'get_crypto_price' if you get any user query related to price of any crypto, call that function, for other queries refuse to give the answer politely by saying that you are only designed to answer crypto price related questions, do not give any suggestions."},
-    {"role": "user", "content": "What is Mumbai culture"}
-]
+# Buttons to perform operations
+col1, col2 = st.columns(2)
 
-get_llm_response(system_msg=messages[0]['content'], user_msg=messages[1]['content'], tool_list=tools)
+with col1:
+    if st.button("Refetch supported currencies"):
+        refetch_curr()
+        st.success("Currencies updated")
+
+with col2:
+    if st.button("Refetch crypto ids"):
+        refetch_crypto_ids()
+        st.success("Crypto ids updated")
+
