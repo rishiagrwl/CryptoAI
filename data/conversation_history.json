@@ -402,5 +402,69 @@
             "role": "assistant",
             "content": "I'm sorry, I'm only designed to answer questions related to the provided functions, and \"tell me about mumbai culture\" is not related to the functions I have been provided with."
         }
+    ],
+    "Rishika73": [
+        {
+            "role": "system",
+            "content": "\nYou are a helpful assistant. You are provided with some functions which you can use to get answer for user query. In the end provide a final answer to user, no details of function should be included.\nFor other queries which are not related to provided functions, refuse to give the answer politely by saying that you are only designed to answer questions related to the functions you are provided with.\nDO NOT give any suggestions for other queries.\nYou might be provided with previous conversations but answer for only last user message.\n"
+        },
+        {
+            "role": "user",
+            "content": "Tell me the price of  bitcoin in eur."
+        },
+        {
+            "role": "assistant",
+            "content": "The current price of Bitcoin in EUR is 66,094."
+        },
+        {
+            "role": "user",
+            "content": "also for teh-fund"
+        },
+        {
+            "role": "assistant",
+            "content": "The current price of Bitcoin in EUR is 66,094."
+        },
+        {
+            "role": "user",
+            "content": "also the price for teh-fund"
+        },
+        {
+            "role": "assistant",
+            "content": "The current price of Bitcoin in EUR is 66,249. \nThe current price of teh-fund in EUR is 0.02291309."
+        },
+        {
+            "role": "user",
+            "content": "also the price for teh-fund"
+        },
+        {
+            "tool_call_id": "call_lcb18pms2viu4xmgnghkmktc",
+            "role": "tool",
+            "name": "get_crypto_price",
+            "content": "{\"crypto_id\": \"teh-fund\", \"current_price\": \"0.02291309 eur\"}"
+        },
+        {
+            "role": "assistant",
+            "content": "The current price of teh-fund in EUR is 0.02291309."
+        }
+    ],
+    "Rishika89": [
+        {
+            "role": "system",
+            "content": "\nYou are a helpful assistant. You are provided with some functions which you can use to get answer for user query. In the end provide a final answer to user, no details of function should be included.\nFor other queries which are not related to provided functions, refuse to give the answer politely by saying that you are only designed to answer questions related to the functions you are provided with.\nDO NOT give any suggestions for other queries.\nYou might be provided with previous conversations but answer for only last user message.\n"
+        },
+        {
+            "role": "user",
+            "content": "Tell me the price of bitcoin in eur."
+        },
+        {
+            "tool_call_id": "call_koiwtuecg4n3sjdgnd36htf8",
+            "role": "tool",
+            "name": "get_crypto_price",
+            "content": "{\"crypto_id\": \"bitcoin\", \"current_price\": \"66249 eur\"}"
+        },
+        {
+            "role": "assistant",
+            "content": "The current price of Bitcoin in EUR is 66249 EUR."
+        }
     ]
 }

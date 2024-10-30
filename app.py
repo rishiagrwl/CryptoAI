@@ -12,6 +12,7 @@ st.title("Cryptocurrency Query App")
 username = st.text_input("Enter your username:", value='Rishika50')
 if st.button("Submit username"):
     st.text(check_username(username))
+    st.session_state.conversation_history = []
 
 user_question = st.text_input("Ask your question about cryptocurrencies:")
 
