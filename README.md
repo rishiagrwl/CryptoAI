@@ -1,4 +1,4 @@
-# Crypto_AI
+# Cryptocurrency AI agent
 
 ## Setup Instructions
 
