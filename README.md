@@ -10,6 +10,11 @@
     ```bash
     conda activate crypto_ai
     ```
+2. **Create a .env file and paste you TOGETHER AI API key as follows**:
+    ```bash
+    TOGETHER_AI_API = ''
+    ```
+
 3. **Run the application**:
     ```bash
     streamlit run app.py
