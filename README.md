@@ -4,19 +4,24 @@
 
 ## Setup Instructions
 
-1. **Create the environment**:
+1. **Clone the repo**:
+    ```bash
+    git clone https://github.com/rishiagrwl/crypto_AI.git 
+    ```   
+
+2. **Create the environment**:
     ```bash
     conda env create -f environment.yml
     ```
-2. **Activate the environment**:
+3. **Activate the environment**:
     ```bash
     conda activate crypto_ai
     ```
-3. **Create a `.env` file and paste your TOGETHER AI API key as follows**:
+4. **Create a `.env` file and paste your TOGETHER AI API key as follows**:
     ```env
     TOGETHER_AI_API=''
     ```
-4. **Run the application**:
+5. **Run the application**:
     ```bash
     streamlit run app.py
     ```
