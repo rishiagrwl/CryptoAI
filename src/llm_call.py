@@ -5,6 +5,7 @@ import openai
 from decouple import config as envConfig
 from src.utils import *
 from pydantic import BaseModel
+from src.custom_ratelimit import rate_limit
 
 CONFIG = read_yaml()
 
@@ -14,6 +15,8 @@ client = openai.OpenAI(
     api_key = envConfig('TOGETHER_AI_API', cast=str),
 )  
 
+
+@rate_limit(calls=CONFIG['LLM_LIMIT_CALLS'], period=CONFIG['LLM_LIMIT_PERIOD'])
 ## llm call function that can handle non-streaming responses for json and tool calls
 def get_llm_response(messages: list = [], system_message: str = None, user_message: str = None, tool_list: list = None, json_schema: BaseModel = None):
     # add system message at start

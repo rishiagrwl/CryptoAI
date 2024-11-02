@@ -1,5 +1,5 @@
 CACHE_JSON: data\cache.json
-CACHE_LIMIT: 60
+CACHE_LIMIT: 120
 CRYPTO_ID_URL: https://api.coingecko.com/api/v3/coins/list
 CRYPTO_ID_JSON: data\crypto_ids.json
 VS_CURR_ID: https://api.coingecko.com/api/v3/simple/supported_vs_currencies
@@ -8,3 +8,8 @@ CRYPTO_PRICE_ENDPOINT: https://api.coingecko.com/api/v3/simple/price
 CONV_HIST_JSON: data\conversation_history.json
 TOGETHER_AI_BASE_URL: https://api.together.xyz/v1
 LLM_MODEL: meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo
+LLM_LIMIT_CALLS: 50
+LLM_LIMIT_PERIOD: 60
+CRYPTO_LIMIT_CALLS: 20
+CRYPTO_LIMIT_PERIOD: 60
+

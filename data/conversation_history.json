@@ -466,5 +466,33 @@
             "role": "assistant",
             "content": "The current price of Bitcoin in EUR is 66249 EUR."
         }
+    ],
+    "Rishika123": [
+        {
+            "role": "system",
+            "content": "\nYou are a helpful assistant. You are provided with some functions which you can use to get answer for user query. In the end provide a final answer to user, no details of function should be included.\nFor other queries which are not related to provided functions, refuse to give the answer politely by saying that you are only designed to answer questions related to the functions you are provided with.\nDO NOT give any suggestions for other queries.\nYou might be provided with previous conversations but answer for only last user message.\n"
+        },
+        {
+            "role": "user",
+            "content": "price of bitcoin in eur"
+        },
+        {
+            "role": "assistant",
+            "content": "64105"
+        },
+        {
+            "role": "user",
+            "content": "price of ppft in usd"
+        },
+        {
+            "tool_call_id": "call_ltz7g1f64m76h6w27y7gs8rt",
+            "role": "tool",
+            "name": "get_crypto_price",
+            "content": "{\"crypto_id\": \"papparico-finance-token\", \"current_price\": \"1.515e-05 usd\"}"
+        },
+        {
+            "role": "assistant",
+            "content": "0.00001515 USD"
+        }
     ]
 }

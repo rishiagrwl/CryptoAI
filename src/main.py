@@ -91,70 +91,76 @@ def get_conv_hist(user_id: str):
     return new_conv
 
 def get_response(user_query: str, user_id: str):
-    crypto_logger.info(f'------------------------------------------NEW RUN----------------------------------------------------------')
-    
-    # a unique id for each ques, useful for tracing each ques
-    unique_id = uuid.uuid4().hex
-    crypto_logger.info(f'{user_id} | {unique_id} | USER QUERY: {user_query}')
-    
-    # find the user query kanguage and get english text if not already
-    trans_msg, trans_text_answer, trans_json_answer, trans_tools_op = get_llm_response(system_message=SYS_PROMPT_LANGUAGE, user_message=user_query, json_schema=ISO_code)
-    crypto_logger.info(f'{user_id} | {unique_id} | TRANSLATE LLM RESPONSE: msgs-{trans_msg}, text answer-{trans_text_answer}, json answer-{trans_json_answer}, tool calls-{trans_tools_op}')
-    print(type(trans_json_answer))
-    if trans_json_answer['ISO_code'] != 'en':
-        user_query = translate_text(text = user_query, source=trans_json_answer['ISO_code'])
-        crypto_logger.info(f'{user_id} | {unique_id} | TRANSLATED USER QUERY: {user_query}')
-   
-   # past conv loading
-    past_conv = get_conv_hist(user_id=user_id)
-    crypto_logger.info(f'{user_id} | {unique_id} | Past conversation fetched')
-    
-    # get first reponse for user query
-    msgs, text_answer, json_answer, tools_op = get_llm_response(messages=past_conv, system_message=SYS_PROMPT_TOOLS, user_message=user_query, tool_list=useful_tools)
-    crypto_logger.info(f'{user_id} | {unique_id} | LLM RESPONSE: msgs-{msgs[-3:]}, text answer-{text_answer}, json answer-{json_answer}, tool calls-{tools_op}')
-    
-    # run the loop until all llm stops giving tool calls
-    while tools_op:
-      for tool in tools_op:
-        if tool['name']=='get_crypto_price':
-          func_response = get_cached_crypto_price(crypto_id=tool['args']['crypto_id'].lower(), currency=tool['args']['currency'].lower(), supported_curr=supported_curr, crypto_id_map=crypto_id_map, user_id=user_id, quuid=unique_id)
-          crypto_logger.info(f'{user_id} | {unique_id} | FUNCTION RESPONSE: {func_response}')
-          msgs.append(
-                        {
-                          "tool_call_id": tool['id'],
-                          "role": "tool",
-                          "name": tool['name'],
-                          "content": str(func_response),
-                        }
-                    )
-        else:
-          crypto_logger.error(f"No function exist as {tool['name']}")
-          raise ValueError(f"No function exist as {tool['name']}")
+    try:
+      crypto_logger.info(f'------------------------------------------NEW RUN----------------------------------------------------------')
       
-      msgs, text_answer, json_answer, tools_op = get_llm_response(messages=msgs)
+      # a unique id for each ques, useful for tracing each ques
+      unique_id = uuid.uuid4().hex
+      crypto_logger.info(f'{user_id} | {unique_id} | USER QUERY: {user_query}')
+      
+      # find the user query kanguage and get english text if not already
+      trans_msg, trans_text_answer, trans_json_answer, trans_tools_op = get_llm_response(system_message=SYS_PROMPT_LANGUAGE, user_message=user_query, json_schema=ISO_code)
+      crypto_logger.info(f'{user_id} | {unique_id} | TRANSLATE LLM RESPONSE: msgs-{trans_msg}, text answer-{trans_text_answer}, json answer-{trans_json_answer}, tool calls-{trans_tools_op}')
+      print(type(trans_json_answer))
+      if trans_json_answer['ISO_code'] != 'en':
+          user_query = translate_text(text = user_query, source=trans_json_answer['ISO_code'])
+          crypto_logger.info(f'{user_id} | {unique_id} | TRANSLATED USER QUERY: {user_query}')
+    
+      # past conv loading
+      past_conv = get_conv_hist(user_id=user_id)
+      crypto_logger.info(f'{user_id} | {unique_id} | Past conversation fetched')
+      
+      # get first reponse for user query
+      msgs, text_answer, json_answer, tools_op = get_llm_response(messages=past_conv, system_message=SYS_PROMPT_TOOLS, user_message=user_query, tool_list=useful_tools)
       crypto_logger.info(f'{user_id} | {unique_id} | LLM RESPONSE: msgs-{msgs[-3:]}, text answer-{text_answer}, json answer-{json_answer}, tool calls-{tools_op}')
-    
-    # append the final text answer
-    msgs.append(
-                {
-                  "role": "assistant",
-                  "content": text_answer,
-                }
-            )
-    
-    # translate back the answer if user query was in some other language
-    if trans_json_answer['ISO_code'] != 'en':
-      final_answer = translate_text(text=text_answer, target=trans_json_answer['ISO_code'])
-    else: 
-      final_answer = text_answer
-    
-    crypto_logger.info(f'{user_id} | {unique_id} | FINAL ANSWER: {final_answer}')
-    
-    # update and save the conversation for this user
-    conv_hist[user_id]=msgs
-    write_json(data=conv_hist, output_file=CONFIG['CONV_HIST_JSON'])
-    
-    crypto_logger.info(f'{user_id} | {unique_id} | Updated conversation stored')
-    return final_answer
+      
+      # run the loop until all llm stops giving tool calls
+      while tools_op:
+        for tool in tools_op:
+          if tool['name']=='get_crypto_price':
+            func_response = get_cached_crypto_price(crypto_id=tool['args']['crypto_id'].lower(), currency=tool['args']['currency'].lower(), supported_curr=supported_curr, crypto_id_map=crypto_id_map, user_id=user_id, quuid=unique_id)
+            crypto_logger.info(f'{user_id} | {unique_id} | FUNCTION RESPONSE: {func_response}')
+            msgs.append(
+                          {
+                            "tool_call_id": tool['id'],
+                            "role": "tool",
+                            "name": tool['name'],
+                            "content": str(func_response),
+                          }
+                      )
+          else:
+            crypto_logger.error(f"No function exist as {tool['name']}")
+            raise ValueError(f"No function exist as {tool['name']}")
+        
+        msgs, text_answer, json_answer, tools_op = get_llm_response(messages=msgs)
+        crypto_logger.info(f'{user_id} | {unique_id} | LLM RESPONSE: msgs-{msgs[-3:]}, text answer-{text_answer}, json answer-{json_answer}, tool calls-{tools_op}')
+      
+      # append the final text answer
+      msgs.append(
+                  {
+                    "role": "assistant",
+                    "content": text_answer,
+                  }
+              )
+      
+      # translate back the answer if user query was in some other language
+      if trans_json_answer['ISO_code'] != 'en':
+        final_answer = translate_text(text=text_answer, target=trans_json_answer['ISO_code'])
+      else: 
+        final_answer = text_answer
+      
+      crypto_logger.info(f'{user_id} | {unique_id} | FINAL ANSWER: {final_answer}')
+      
+      # update and save the conversation for this user
+      conv_hist[user_id]=msgs
+      write_json(data=conv_hist, output_file=CONFIG['CONV_HIST_JSON'])
+      
+      crypto_logger.info(f'{user_id} | {unique_id} | Updated conversation stored')
+      return final_answer
+
+    except Exception as e:
+        # Log and return a user-friendly message
+        crypto_logger.error(f"{user_id} | {unique_id} | Error occurred: {e}")
+        return "Some error occurred at the backend. Please wait a moment and try again."
 
 

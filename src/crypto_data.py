@@ -2,6 +2,7 @@ import time
 import requests
 from src.utils import *
 from custom_logging import crypto_logger
+from src.custom_ratelimit import rate_limit
 
 CONFIG = read_yaml()
 
@@ -94,6 +95,8 @@ def validate_crypto_params(crypto_id: str, currency: str, supported_curr: list, 
     
     return crypto_final_id, currency
 
+
+@rate_limit(calls=CONFIG['CRYPTO_LIMIT_CALLS'], period=CONFIG['CRYPTO_LIMIT_PERIOD'])
 ## fetch real time price for given crypto_id and currency
 def fetch_crypto_price_api(crypto_id='bitcoin', currency='usd'):
     crypto_price_endpoint = CONFIG['CRYPTO_PRICE_ENDPOINT']
